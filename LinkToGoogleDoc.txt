@@ -1,0 +1,36 @@
+https://docs.google.com/document/d/1qW3rRi658_QY6f0S0GhghUq-mbgNfUyEPm_OQCFeB3M/edit
+
+In case you cannot access google, here is the text version:
+W207 Final Project Writeup - Pizza Learning - Max, Ricardo, Denis, Lin
+
+Kaggle project link: 
+https://www.kaggle.com/c/random-acts-of-pizza 
+
+Define the problem: 
+In this project we used data collected Reddit post about free pizza requests to predict whether a request will get free pizza or not. 
+
+Prepare input data:
+Each request is represented in json format, and contained attributes such as request title, request text, comment, requester id and so on. Detailed information can be found here http://cs.stanford.edu/~althoff/raop-dataset/. There are a total of 5671 json objects provided to us, we divided the data into 3969 as training dataset, and 1702 as test dataset. 
+
+Select/create model features 
+We setup a baseline using one attribute request_text_edit_aware, which is edit aware version of "request_text". The data provider use a set of rules to strip edited comments indicating the success of the request such as "EDIT: Thanks /u/foo, the pizza was delicous".
+
+Clean and pre-process data 
+We used a simple CountVectorizer model, and converted the collection of training data text documents to a matrix of token counts. Then use the same vocabulary set on a CountVectorizer  model for the test set to generate test token count data. 
+When processing data, we tried text preprocessor such as treat data as lower case, or strip white spaces, and turned out they did not improve result much so we left with the default (default CountVectorizer learning uses lowercase already)
+
+Then fit a simple logistic regression on the token count data to predict outcome for test set. 
+This gives us a baseline with F score around 0.67. 
+
+Feature Engineering
+We then looked at requester_subreddits_at_request, which is the list of subreddits in which the author had already posted in at the time of request. We want to see if the requester who received pizza belongs to a particular group. 
+We used BernoulliNB to cross validate. 
+Our investigation shows the data is a good predictor so we included this attribute in our transformed data before we run the final logistic regression. 
+
+We also explored with some other attributes such as unix_timestamp_of_request_utc (Unit timestamp of request in UTC) hour part, request_title length, and got slightly improvement. 
+
+Conclusion
+We are happy with our selection of features, and CountVectorizer + LogisticRegression model. 
+As a result, we were able to score 0.86 in the kaggle competition, ranked 13th at the best. 
+
+
